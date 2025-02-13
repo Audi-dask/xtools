@@ -90,6 +90,7 @@ const Header = () => {
   const [selectEl, setSelectEl] = useState<null | HTMLElement>(null);
   const [toolList, setToolList] = useState<any[]>(TOOLKIT_LIST);
   const [user, setUser] = useState<any>(null);
+  const [promotionInfo, setPromotionInfo] = useState<any>(null);
   const [keyword, setKeyword] = useState('');
   const open = Boolean(anchorEl);
 
@@ -110,6 +111,16 @@ const Header = () => {
       res.json().then((data) => {
         if (data.code === 0) {
           setUser(data.data);
+        }
+      });
+    });
+
+    fetch('/api/v1/promotion_ambassador/info', {
+      credentials: 'include',
+    }).then((res) => {
+      res.json().then((data) => {
+        if (data.code === 0) {
+          setPromotionInfo(data.data);
         }
       });
     });
@@ -441,7 +452,7 @@ const Header = () => {
               >
                 工作台
               </Button>
-              <LoggedInView user={user} />
+              <LoggedInView user={user} promotionInfo={promotionInfo} />
             </>
           ) : (
             <>

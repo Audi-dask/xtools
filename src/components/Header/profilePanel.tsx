@@ -12,7 +12,7 @@ import {
   ListItemText,
   ListItemIcon,
 } from '@mui/material';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import {
   Badge,
@@ -25,17 +25,37 @@ import {
   SpaceIcon,
   OrderIcon,
   PersonIcon,
-  PromotionIcon,
   LogoutIcon,
+  PromotionIcon,
 } from './components';
 import alert from '@/components/Alert';
 export interface ProfilePanelProps {
   userInfo: any | null;
   verified: boolean;
+  promotionInfo?: any;
 }
 
 const ProfilePanel: React.FC<ProfilePanelProps> = (props) => {
-  const { userInfo, verified } = props;
+  const { userInfo, verified, promotionInfo } = props;
+  const OPT_LIST = [
+    {
+      name: '个人中心',
+      icon: <PersonIcon sx={{ fontSize: 16 }} />,
+      link: '/console/personal/base',
+    },
+    {
+      name: '空间管理',
+      icon: <SpaceIcon sx={{ fontSize: 16 }} />,
+      link: '/console/space/base',
+    },
+
+    {
+      name: '订单管理',
+      icon: <OrderIcon sx={{ fontSize: 16 }} />,
+      link: '/console/space/order',
+    },
+  ];
+  const [optList, setOptList] = useState([...OPT_LIST]);
   const handleLogout = () => {
     fetch('/api/v1/user/signout', {
       credentials: 'include',
@@ -52,28 +72,18 @@ const ProfilePanel: React.FC<ProfilePanelProps> = (props) => {
     alert.success('用户ID已复制到剪贴板');
   }, []);
 
-  const OPT_LIST = [
-    {
-      name: '个人中心',
-      icon: <PersonIcon sx={{ fontSize: 16 }} />,
-      link: '/console/personal/base',
-    },
-    {
-      name: '空间管理',
-      icon: <SpaceIcon sx={{ fontSize: 16 }} />,
-      link: '/console/space/base',
-    },
-    {
-      name: '推广大使',
-      icon: <PromotionIcon sx={{ fontSize: 16 }} />,
-      link: '/console/personal/promotion',
-    },
-    {
-      name: '订单管理',
-      icon: <OrderIcon sx={{ fontSize: 16 }} />,
-      link: '/console/space/order',
-    },
-  ];
+  useEffect(() => {
+    if (promotionInfo?.referral_code) {
+      if (optList.findIndex((item) => item.name === '推广大使') === -1) {
+        optList.splice(2, 0, {
+          name: '推广大使',
+          icon: <PromotionIcon sx={{ fontSize: 16 }} />,
+          link: '/console/personal/promotion',
+        });
+        setOptList([...optList]);
+      }
+    }
+  }, [promotionInfo]);
 
   return (
     <InfoCard>
@@ -173,7 +183,7 @@ const ProfilePanel: React.FC<ProfilePanelProps> = (props) => {
           bgcolor: 'background.paper',
         }}
       >
-        {OPT_LIST.map((item) => {
+        {optList.map((item) => {
           return (
             <ListItem
               key={item.name}

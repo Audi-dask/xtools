@@ -8,7 +8,7 @@ export interface LoggedInProps {
   verified: boolean;
 }
 
-const LoggedInView = ({ user }: any) => {
+const LoggedInView = ({ user, promotionInfo }: any) => {
   return (
     <Tooltip
       placement='bottom-end'
@@ -30,7 +30,11 @@ const LoggedInView = ({ user }: any) => {
         },
       }}
       title={
-        <ProfilePanel userInfo={user} verified={user.is_certified === 1} />
+        <ProfilePanel
+          userInfo={user}
+          verified={user.is_certified === 1}
+          promotionInfo={promotionInfo}
+        />
       }
     >
       <Box>
